@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -40,6 +41,17 @@ public class EmployeeController {
     @GetMapping("/employeeList")
     public List<Employee> getEmployeeList(){
         return employeeServiceImpl.getEmployeeList();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee updatedEmployee) {
+        Employee updated = employeeServiceImpl.updateEmployee(id, updatedEmployee);
+
+        if (updated != null) {
+            return ResponseEntity.ok(updated);  // Return updated employee with 200 OK
+        } else {
+            return ResponseEntity.status(404).body(null);  // Return 404 if employee not found
+        }
     }
 
 }

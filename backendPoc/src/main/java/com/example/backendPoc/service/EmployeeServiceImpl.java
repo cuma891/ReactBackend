@@ -1,6 +1,7 @@
 package com.example.backendPoc.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     public List<Employee> getEmployeeList() {
         return employeeRepository.findAll();
+    }
+
+    public Employee updateEmployee(Long id, Employee updatedEmployee) {
+        Optional<Employee> existingEmployeeOptional = employeeRepository.findById(id);
+
+        if (existingEmployeeOptional.isPresent()) {
+            Employee existingEmployee = existingEmployeeOptional.get();
+
+            // Update the fields of the existing employee with the new data
+            existingEmployee.setName(updatedEmployee.getName());
+            existingEmployee.setAge(updatedEmployee.getAge());
+            existingEmployee.setEmail(updatedEmployee.getEmail());
+            existingEmployee.setAddress(updatedEmployee.getAddress());
+            existingEmployee.setSalary(updatedEmployee.getSalary());
+
+            // Save the updated employee
+            return employeeRepository.save(existingEmployee);
+        } else {
+            // If the employee doesn't exist, return null (or you can throw an exception)
+            return null;
+        }
     }
 
 }
