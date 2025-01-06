@@ -7,12 +7,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backendPoc.entity.Employee;
 import com.example.backendPoc.service.EmployeeServiceImpl;
 
+
 @RestController
 @RequestMapping("/employee")
+@CrossOrigin
 public class EmployeeController {
 
     @Autowired
@@ -25,10 +31,15 @@ public class EmployeeController {
     }
 
 
- @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id){
         employeeServiceImpl.deleteEmployee(id);
         return ResponseEntity.ok("Employee deleted successfully");
+    }
+
+    @GetMapping("/employeeList")
+    public List<Employee> getEmployeeList(){
+        return employeeServiceImpl.getEmployeeList();
     }
 
 }
