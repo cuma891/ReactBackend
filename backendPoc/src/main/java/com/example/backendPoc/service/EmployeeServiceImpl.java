@@ -13,7 +13,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     EmployeeRepository employeeRepository;
 
     public Employee addEmployee(Employee emp){
-        return null;
+        return employeeRepository.save(emp);
     }
 
 }
