@@ -19,7 +19,7 @@ import com.example.backendPoc.service.EmployeeServiceImpl;
 
 @RestController
 @RequestMapping("/employee")
-@CrossOrigin
+@CrossOrigin("*")
 public class EmployeeController {
 
     @Autowired
