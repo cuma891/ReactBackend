@@ -17,6 +17,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     EmployeeRepository employeeRepository;
 
     public Employee addEmployee(Employee emp){
+        if(employeeRepository.findByEmail(emp.getEmail()) != null){
+            throw new RuntimeException("Employee already exists with mail id: "+emp.getEmail());
+        }
         return employeeRepository.save(emp);
     }
     
