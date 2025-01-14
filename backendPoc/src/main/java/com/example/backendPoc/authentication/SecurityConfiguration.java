@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,8 +18,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 
 import static org.springframework.security.config.Customizer.withDefaults;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -31,15 +37,39 @@ public class SecurityConfiguration {
 
     @Autowired
     private UserInfoService userInfoService;
+
+// CORS Configuration
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        List<String> allowedOrigins = Arrays.asList(
+    "http://localhost:3000",   
+         "http://localhost:3001"
+    );
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(allowedOrigins); 
+        configuration.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+        configuration.addAllowedHeader("*"); // Allow all headers
+        configuration.setAllowCredentials(true); // Allow cookies and credentials (e.g., JWTs)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); 
+        return source;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println(http);
         RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
                 new AntPathRequestMatcher("/admin/register","POST"),
-                new AntPathRequestMatcher("/admin/login","POST")
+                new AntPathRequestMatcher("/admin/login","POST"),
+                new AntPathRequestMatcher("/auth/google","POST")
 
         );
-        AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/**");
-        http.authorizeHttpRequests(authorizationManager -> authorizationManager
+        //AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/**");
+        http.cors().configurationSource(corsConfigurationSource())
+        .and()
+        .authorizeHttpRequests(authorizationManager -> authorizationManager
                 .requestMatchers(PROTECTED_URLS).permitAll()
                 .anyRequest()
                 .authenticated());
@@ -49,7 +79,8 @@ public class SecurityConfiguration {
                  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authenticationProvider(authenticationProvider()).addFilterBefore(
                          jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-         return http.build();
+
+        return http.build();
     }
 
     @Bean
@@ -70,3 +101,4 @@ public class SecurityConfiguration {
         return configuration.getAuthenticationManager();
     }
 }
+

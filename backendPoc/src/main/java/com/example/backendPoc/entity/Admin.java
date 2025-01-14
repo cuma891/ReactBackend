@@ -27,6 +27,12 @@ public class Admin implements UserDetails{
 
     public Admin() {}
 
+
+    public Admin(String emailId) {
+        this.emailId = emailId;
+    }
+
+
     public long getId() {
         return id;
     }

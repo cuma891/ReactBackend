@@ -37,11 +37,15 @@ public class AdminServiceImpl {
             throw new Exception("password is incorrect");
         }
         else{
-            UserDetails userDetails = userInfoService.userDetailsService().loadUserByUsername(String.valueOf(email));
-            String jwt = jwtService.generateToken(userDetails);
-            AdminResponse  adminResponse = new AdminResponse(admin.getId(), admin.getEmailId(), jwt);
-            return adminResponse;
+           return generateJWTAdminResponse(admin);
         }
+    }
+
+    public AdminResponse generateJWTAdminResponse(Admin admin){
+        UserDetails userDetails = userInfoService.userDetailsService().loadUserByUsername(String.valueOf(admin.getEmailId()));
+        String jwt = jwtService.generateToken(userDetails);
+        AdminResponse  adminResponse = new AdminResponse(admin.getId(), admin.getEmailId(), jwt);
+        return adminResponse;
     }
         
 }
